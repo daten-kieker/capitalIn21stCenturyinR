@@ -10,7 +10,7 @@ The data were downloaded as Excel files from: http://piketty.pse.ens.fr/en/capit
 This document depends on the [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html), [reshape2](http://cran.r-project.org/web/packages/reshape2/index.html), and [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) packages.
 
 
-```{r loadCh13,message=FALSE}
+```{r loadCh13,message=FALSE, echo=FALSE}
 library(ggplot2)
 library(xlsx)
 library(reshape2)
@@ -18,27 +18,54 @@ library(reshape2)
 
 ## Table TS13.1
 ts131 = read.xlsx("../Piketty2014FiguresTables/Chapter13TablesFigures.xlsx",sheetName="TS13.1",rowIndex=5:20,colIndex=c(1,2:5),header=TRUE)
-names(ts131)[1] = "Decade"
+names(ts131) = c("Decade", "U.S.", "U.K.", "Sweden", "France")
 ts131m = melt(ts131,id.vars="Decade")
 names(ts131m) = c("Decade","Country","TaxRevenues")
 ts131m$TaxRevenuesPercents <- ts131m$TaxRevenues*100
-
-## Make Figure 13.1
+```
 
 ```{r,dependson="loadCh13",fig.height=4,fig.width=8}
-ggplot(data=ts131m, aes(x=Decade,y=TaxRevenuesPercents,colour=Country),xlim=c(1870,2010),xlab="Year",ylab="Tax Revenues (Percent National Income)") + geom_line()
+## Make Figure 13.1
+ggplot(data=ts131m, aes(x=Decade,y=TaxRevenuesPercents,colour=Country),xlim=c(1870,2010)) + 
+  xlab("Year") + 
+  ylab("Tax Revenues (Percent National Income)") +
+  geom_line() + 
+  geom_point(aes(shape=Country))
 ```
+<!--
 ## below is the qplot way to do it, quick dirty.  up above
 ## may allow more customization
-qplot(Decade,TaxRevenuesPercents,data=ts131m, color=Country,geom="line",xlim=c(1870,2010),xlab="Year",ylab="Tax Revenues (Percent National Income)")
+## qplot(Decade,TaxRevenuesPercents,data=ts131m, color=Country,geom="line",xlim=c(1870,2010),xlab="Year",ylab="Tax Revenues (Percent National Income)")
+-->
 
-## prettify above, edit below.
+Now there is a table to the side, that's not summarized into decades...let's see where this goes...
 
-## Make Figure 1.2
-
-This code remakes Figure 1.2. Note that in the figure in the Excel tables, the x-axis is not evenly spaced, so the figure looks different. 
-
-```{r,dependson="loadCh0",fig.height=4,fig.width=8}
-qplot(year,worldPopulation,data=ts12,fill=Country,geom="ribbon",position="stack",xlim=c(1700,2012),xlab="Year",ylab="Percent of World Population")
+```{r loadCh13x,message=FALSE}
+## Table TS13.1x, where x = extra
+ts131x = read.xlsx("../Piketty2014FiguresTables/Chapter13TablesFigures.xlsx",sheetName="TS13.1",rowIndex=5:146,colIndex=7:11,header=TRUE)
+names(ts131x) = c("Year", "U.S.", "U.K.", "Sweden", "France")
+ts131xm = melt(ts131x,id.vars="Year")
+names(ts131xm) = c("Year","Country","TaxRevenues")
+ts131xm$TaxRevenuesPercents <- ts131xm$TaxRevenues*100
 ```
 
+
+```{r,dependson="loadCh13x",fig.height=4,fig.width=8}
+## Make Figure 13.1x
+ggplot(data=ts131xm, aes(x=Year,y=TaxRevenuesPercents,colour=Country),xlim=c(1870,2010)) + 
+  xlab("Year") + 
+  ylab("Tax Revenues (Percent National Income)") +
+  geom_line() + 
+  geom_point(aes(shape=Country))
+```
+
+<!--
+## below is the qplot way to do it, quick dirty.  up above
+## may allow more customization
+##qplot(Year,TaxRevenuesPercents,data=ts131xm, color=Country,geom="line",xlim=c(1870,2010),xlab="Year",ylab="Tax Revenues (Percent National Income)")
+
+
+
+## prettify above, edit below.
+## items remaining -- the table 13.2, for which there was no included figure(s).
+-->
